@@ -6,5 +6,5 @@ services:
     image: daft
     restart: always
     ports:
-      - 9003:5000
+      - 5000:5000
 
