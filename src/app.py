@@ -16,7 +16,11 @@ def detect_img(img):
   print(ret_det)
   return ret_det
 
-@app.route('/api/test', methods=['POST'])
+@app.route('/', methods=['GET'])
+def reach():
+  return "CAN REACH!"
+
+@app.route('/api/analyse', methods=['POST'])
 def img_recog():
   print("Requesting obj detection")
   r = request
@@ -25,6 +29,3 @@ def img_recog():
   # decode image
   img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
   return json.dumps(detect_img(img))
-
-#yolo.close_session()
-#detect_img()

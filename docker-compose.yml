@@ -1,0 +1,10 @@
+version: '3.1'
+
+services:
+  daft:
+    build: ./
+    image: daft
+    restart: always
+    ports:
+      - 9003:5000
+
