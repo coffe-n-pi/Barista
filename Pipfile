@@ -7,11 +7,11 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-tensorflow = "==1.5"
 keras = "*"
 matplotlib = "*"
 opencv-python = "*"
 pillow = "*"
+tensorflow = "==1.5"
 
 [requires]
 python_version = "3.6"
