@@ -12,4 +12,5 @@ WORKDIR /KERAS
 RUN pipenv run python convert.py yolov3.cfg yolov3.weights ../src/cnn/model_data/yolo.h5
 
 WORKDIR /src
+EXPOSE 5000/tcp
 CMD ["pipenv", "run", "flask", "run", "--without-threads", "--host=0.0.0.0"]

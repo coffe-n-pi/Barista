@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-tensorflow = "*"
+tensorflow = "==1.5"
 keras = "*"
 matplotlib = "*"
 opencv-python = "*"
