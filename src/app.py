@@ -1,4 +1,5 @@
 from flask import Flask, Response, request
+from flask_httpauth import HTTPTokenAuth
 from cnn.yolo import YOLO
 from PIL import Image
 import tensorflow as tf
@@ -7,7 +8,17 @@ import numpy as np
 import cv2
 import json
 app = Flask(__name__)
+
+# Last image sent.
 LATEST_IMG = None
+
+# FYI this is incredibly hacky code.
+# Nothing here should ever be used in production... kind regards, Linus.
+token_auth = HTTPTokenAuth()
+
+@token_auth.verify_token
+def verify_token(token):
+  return True if token == "1QPbwyJeFdi/cpdxHCUGEHKE+uhCIuVJVCdXwc9Nmq8=" else False
 
 def detect_img(img):
   global LATEST_IMG
@@ -17,7 +28,6 @@ def detect_img(img):
     detections, out = yolo.detect_image(image)
     for key in detections:
       ret_det[yolo.GetClassFromIndex(key)] = int(detections[key])
-    print(ret_det)
     with BytesIO() as output:
       image.save(output, 'jpeg')
       LATEST_IMG = output.getvalue()
@@ -40,6 +50,7 @@ def video_feed():
   return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 @app.route('/api/analyse', methods=['POST'])
+@token_auth.login_required
 def img_recog():
   r = request
   # convert string of image data to uint8

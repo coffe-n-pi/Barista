@@ -12,6 +12,7 @@ matplotlib = "*"
 opencv-python = "*"
 pillow = "*"
 tensorflow = "==1.5"
+flask-httpauth = "*"
 
 [requires]
 python_version = "3.6"
