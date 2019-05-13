@@ -33,16 +33,14 @@ def gen():
   while True:
     frame = LATEST_IMG
     yield (b'--frame\r\n'
-           b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+           b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 @app.route('/video_feed')
 def video_feed():
-  """Video streaming route. Put this in the src attribute of an img tag."""
   return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 @app.route('/api/analyse', methods=['POST'])
 def img_recog():
-  print("Requesting obj detection")
   r = request
   # convert string of image data to uint8
   nparr = np.fromstring(r.data, np.uint8)
@@ -52,7 +50,6 @@ def img_recog():
   return json.dumps(detect_img(img))
 
 if __name__ == "__main__":
-  print(("* Loading Keras model and Flask starting server... please wait until server has fully started"))
   global yolo
   yolo = YOLO()
   global graph
