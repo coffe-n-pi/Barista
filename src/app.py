@@ -1,20 +1,26 @@
 from flask import Flask, Response, request
 from cnn.yolo import YOLO
 from PIL import Image
+import tensorflow as tf
+from io import BytesIO
 import numpy as np
 import cv2
 import json
 app = Flask(__name__)
-#yolo = YOLO()
 LATEST_IMG = None
 
 def detect_img(img):
-  image = Image.fromarray(img)
-  detections = yolo.detect_image(image)
+  global LATEST_IMG
   ret_det = dict()
-  for key in detections:
-    ret_det[yolo.GetClassFromIndex(key)] = int(detections[key])
-  print(ret_det)
+  with graph.as_default():
+    image = Image.fromarray(img)
+    detections, out = yolo.detect_image(image)
+    for key in detections:
+      ret_det[yolo.GetClassFromIndex(key)] = int(detections[key])
+    print(ret_det)
+    with BytesIO() as output:
+      image.save(output, 'jpeg')
+      LATEST_IMG = output.getvalue()
   return ret_det
 
 @app.route('/', methods=['GET'])
@@ -36,12 +42,21 @@ def video_feed():
 
 @app.route('/api/analyse', methods=['POST'])
 def img_recog():
-  global LATEST_IMG
   print("Requesting obj detection")
   r = request
   # convert string of image data to uint8
   nparr = np.fromstring(r.data, np.uint8)
   # decode image
   img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-  LATEST_IMG = r.data
-  return "{}" #json.dumps(detect_img(img))
+  img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) 
+  return json.dumps(detect_img(img))
+
+if __name__ == "__main__":
+  print(("* Loading Keras model and Flask starting server... please wait until server has fully started"))
+  global yolo
+  yolo = YOLO()
+  global graph
+  graph = tf.get_default_graph()
+  app.run(host='0.0.0.0')
+
+
